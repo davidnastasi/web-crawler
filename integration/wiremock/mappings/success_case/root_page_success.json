@@ -1,0 +1,13 @@
+{
+    "request": {
+    "method": "GET",
+        "url": "/successcase/child2"
+},
+    "response": {
+    "status": 200,
+        "headers": {
+        "Content-Type": "text/html"
+    },
+    "body": "<html><body><h1>Hello</h1><a href='/child1'/></body></html>"
+}
+}
