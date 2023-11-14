@@ -31,10 +31,10 @@ func TestFetch(t *testing.T) {
 	urlTooManyRequests := mockServer.URL + "/toomanyrequests"
 	urlInternalServerError := mockServer.URL + "/internalerror"
 
-	successResult, successErr := fetcher.Fetch(urlSuccess)
-	_, notFoundErr := fetcher.Fetch(urlNotFound)
-	_, tooManyRequestsErr := fetcher.Fetch(urlTooManyRequests)
-	_, internalServerErrorErr := fetcher.Fetch(urlInternalServerError)
+	successResult, successErr := fetcher.Fetch(urlSuccess, "")
+	_, notFoundErr := fetcher.Fetch(urlNotFound, "")
+	_, tooManyRequestsErr := fetcher.Fetch(urlTooManyRequests, "")
+	_, internalServerErrorErr := fetcher.Fetch(urlInternalServerError, "")
 
 	if successResult != "Success response" || successErr != nil {
 		t.Errorf("Unexpected result for success URL. Got %v, %v, want %v, nil", successResult, successErr, "Success response")
@@ -57,7 +57,18 @@ func TestFetch_GetFailure(t *testing.T) {
 	// An intentionally invalid or unreachable URL
 	invalidURL := "http://invalid.url"
 
-	_, err := fetcher.Fetch(invalidURL)
+	_, err := fetcher.Fetch(invalidURL, "")
+
+	if err == nil {
+		t.Errorf("Expected error for GET request failure")
+	}
+}
+
+func TestFetch_FailToCreateRequest(t *testing.T) {
+	// An intentionally invalid or unreachable URL
+	invalidURL := "http://inv alid.url"
+
+	_, err := fetcher.Fetch(invalidURL, "")
 
 	if err == nil {
 		t.Errorf("Expected error for GET request failure")

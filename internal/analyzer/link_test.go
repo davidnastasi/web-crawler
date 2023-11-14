@@ -1,9 +1,9 @@
-package analizer_test
+package analyzer_test
 
 import (
 	"net/url"
 	"testing"
-	"web-crawler/internal/analizer"
+	"web-crawler/internal/analyzer"
 )
 
 func TestGetLinks_Success(t *testing.T) {
@@ -18,12 +18,12 @@ func TestGetLinks_Success(t *testing.T) {
 		</html>
 	`
 
-	links := analizer.GetLinks(baseURL, htmlContent)
+	links := analyzer.GetLinks(baseURL, htmlContent)
+	w1, _ := url.Parse("https://example.com/page1")
+	w2, _ := url.Parse("https://example.com/page2")
+	w3, _ := url.Parse("https://example.com/page3#section")
 
-	expectedLinks := []string{
-		"https://example.com/page1",
-		"https://example.com/page2",
-	}
+	expectedLinks := []*url.URL{w1, w2, w3}
 
 	// Check if the extracted links match the expected links
 	if !equalSlices(links, expectedLinks) {
@@ -31,13 +31,12 @@ func TestGetLinks_Success(t *testing.T) {
 	}
 }
 
-// Helper function to check if two string slices are equal
-func equalSlices(a, b []string) bool {
+func equalSlices(a, b []*url.URL) bool {
 	if len(a) != len(b) {
 		return false
 	}
 	for i := range a {
-		if a[i] != b[i] {
+		if a[i].String() != b[i].String() {
 			return false
 		}
 	}
@@ -49,7 +48,7 @@ func TestGetLinks_Error(t *testing.T) {
 	// Malformed HTML content that will cause an error during tokenization
 	htmlContent := `<html><body><a href=":malformedlink">Link</a></body></html>`
 
-	links := analizer.GetLinks(baseURL, htmlContent)
+	links := analyzer.GetLinks(baseURL, htmlContent)
 
 	// Ensure that the result is an empty slice due to the error in tokenization
 	if len(links) != 0 {
@@ -62,7 +61,7 @@ func TestGetLinks_MailTo(t *testing.T) {
 	// Malformed HTML content that will cause an error during tokenization
 	htmlContent := `<html><body><a href="mailto:mail">Link</a></body></html>`
 
-	links := analizer.GetLinks(baseURL, htmlContent)
+	links := analyzer.GetLinks(baseURL, htmlContent)
 
 	// Ensure that the result is an empty slice due to the error in tokenization
 	if len(links) != 0 {

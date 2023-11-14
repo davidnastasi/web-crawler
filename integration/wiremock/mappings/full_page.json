@@ -1,0 +1,124 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/robot.txt"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/plain"
+        },
+        "body": "User-agent: *\nDisallow: /example/child2\n"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/html"
+        },
+        "body": "<html><body><a href=\"/example/child1\"/><a href=\"/example/child2\"/><a href=\"/example/child3\"/><a href=\"/example/child4\"/></body></html>"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/example/child1"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/html"
+        },
+        "body": "<html><body><a href=\"/example/child1#some\"/><a href=\"/example/child2\"/></body></html>"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/example/child2"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/html"
+        },
+        "body": "<html><body><a href=\"/example/child1\"/></body></html>"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/example/child3"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/html"
+        },
+        "body": "<html><body><a href=\"/example/child3/child1\"/><<a href=\"/example/child3/child3\"/></body></html>"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/example/child3/child3"
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "Content-Type": "text/html"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/example/child3/child1"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/html"
+        },
+        "body": "<html><body><a href=\"/example/child3/child1\"/><<a href=\"/example/child3/child3\"/></body></html>"
+      }
+    },
+    {
+      "scenarioName": "Too Many Requests",
+      "requiredScenarioState": "Started",
+      "newScenarioState": "Unblocked",
+      "request": {
+        "method": "GET",
+        "url": "/example/child4"
+      },
+      "response": {
+        "status": 429,
+        "headers": {
+          "Content-Type": "text/html"
+        }
+      }
+    },
+    {
+      "scenarioName": "Too Many Requests",
+      "requiredScenarioState": "Unblocked",
+      "request": {
+        "method": "GET",
+        "url": "/example/child4"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/html"
+        },
+        "body": "<html><body><h1>Hello, WireMock!</h1><a href='https://www.google.com'/></body></html>"
+      }
+    }
+  ]
+}

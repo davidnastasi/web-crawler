@@ -1,4 +1,4 @@
-package analizer
+package analyzer
 
 import (
 	"strconv"
@@ -7,33 +7,43 @@ import (
 
 type RobotAnalyzer struct{}
 
-type RobotContent struct {
+type RobotRule struct {
 	UserAgent string
 	Allow     []string
 	Disallow  []string
-	CrawDelay *int
+	CrawDelay int
 }
 
-func GetRobotContent(value string) (RobotContent, error) {
-	rb := RobotContent{}
+func GetRobotsContent(value string) ([]RobotRule, error) {
+	var rbs []RobotRule
+	var rb *RobotRule
 	lines := strings.Split(value, "\n")
+
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if strings.HasPrefix(line, "User-agent:") {
+			if rb != nil {
+				rbs = append(rbs, *rb)
+			}
+			rb = &RobotRule{}
 			rb.UserAgent = strings.TrimSpace(line[len("User-agent:"):])
 		} else if strings.HasPrefix(line, "Disallow:") {
 			rb.Disallow = append(rb.Disallow, strings.TrimSpace(line[len("Disallow:"):]))
 		} else if strings.HasPrefix(line, "Allow:") {
-			rb.Disallow = append(rb.Disallow, strings.TrimSpace(line[len("Allow:"):]))
+			rb.Allow = append(rb.Allow, strings.TrimSpace(line[len("Allow:"):]))
 		} else if strings.HasPrefix(line, "Craw-Delay:") {
 			strValue := strings.TrimSpace(line[len("Craw-Delay:"):])
 			intValue, err := strconv.Atoi(strValue)
 			if err != nil {
-				return RobotContent{}, err
+				return []RobotRule{}, err
 			}
-			rb.CrawDelay = &intValue
+			rb.CrawDelay = intValue
 		}
-
 	}
-	return rb, nil
+
+	if rb != nil {
+		rbs = append(rbs, *rb)
+	}
+
+	return rbs, nil
 }

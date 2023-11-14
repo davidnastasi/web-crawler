@@ -1,0 +1,13 @@
+version: "2.1"
+services:
+  wiremock:
+    image: wiremock/wiremock:latest
+    container_name: wc-wiremock
+    ports:
+      - "8989:8080"
+    volumes:
+      - ./wiremock:/home/wiremock/mappings
+    command:
+      - "--local-response-templating"
+      - "--verbose"
+      - "--print-all-network-traffic"

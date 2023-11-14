@@ -1,4 +1,4 @@
-package analizer
+package analyzer
 
 import (
 	"golang.org/x/net/html"
@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-func GetLinks(url *url.URL, value string) []string {
-	var links []string
+func GetLinks(baseUrl *url.URL, value string) []*url.URL {
+	var links []*url.URL
 	tokenizer := html.NewTokenizer(strings.NewReader(value))
 	for {
 		tokenType := tokenizer.Next()
@@ -21,21 +21,18 @@ func GetLinks(url *url.URL, value string) []string {
 			if tokenType == html.StartTagToken || tokenType == html.SelfClosingTagToken {
 				for _, attr := range token.Attr {
 					if attr.Key == "href" {
-						link, err := resolveURL(url, attr.Val)
-						if err != nil {
-							log.Println("resolve url failed", err.Error())
-							continue
-						}
-						if link.Fragment != "" {
-							log.Println("url contains fragment")
-							continue
-						}
-						if link.Scheme != "http" && link.Scheme != "https" {
-							log.Println("url link is not http or https")
+						if strings.HasPrefix(strings.ToLower(attr.Val), "mailto") || strings.HasPrefix(strings.ToLower(attr.Val), "tel") {
+							log.Println("baseUrl link is not http or https")
 							continue
 						}
 
-						links = append(links, link.String())
+						link, err := resolveURL(baseUrl, attr.Val)
+						if err != nil {
+							log.Println("resolve baseUrl failed", err.Error())
+							continue
+						}
+
+						links = append(links, link)
 
 					}
 				}
